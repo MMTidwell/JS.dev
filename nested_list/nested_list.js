@@ -6,50 +6,68 @@
 
     // Creates the ul to hold everything
     var main_node = document.createElement("UL");
-    main_node.setAttribute("id", "box_name_list");
+    main_node.setAttribute("id", "vm_name_list");
+    // appends the ul to the main div
     document.getElementById("main").appendChild(main_node);
 
     // CREATES THE BULLET LIST FOR THE NAME ARRAY (1ST LEVEL)
     for (let i = 0; i < name.length; i++) {
-        // creates the li
+        // Creates the li inside the of the ul vm_name_list
         var name_node = document.createElement("LI");
-        name_node.setAttribute("id", "box_" + i);
-        // appends the li to the ul
+        name_node.setAttribute("id", "vm_" + i);
         main_node.appendChild(name_node);
-        // creates a button indise of each li 
-        var but_node = document.createElement("BUTTON");
-        but_node.setAttribute("id", "name_button");
 
-        // displays box name inside the list
+        // creates a button inside of each li 
+        var but_node = document.createElement("BUTTON");
+        but_node.setAttribute("id", "btn" + i);
+
+        // displays vm name inside the list
         var but_textnode = document.createTextNode(name[i]);
         but_node.appendChild(but_textnode);
         name_node.appendChild(but_node);
 
+        // this will allow the but_node to toggle
+        but_node.setAttribute("value", 0);
 
-        // SHOWS INFO LIST WHEN BOX NAME BUTTON IS CLICKED
-        document.getElementById("box_" + i).addEventListener("click", function() {
+        // toggling the but_node
+        but_node.addEventListener("click", function() {
+            var value = parseInt(this.getAttribute("value"));
+            if (value == 0) {
+                // CREATES THE NESTED BULLETED LIST FOR THE INFO ARRAY (2ND LEVEL)
+                // creates the ul to hold the nested list
+                var info_list_node = document.createElement("UL");
+                info_list_node.setAttribute("id", "vm_info_list_" + i);
+                document.getElementById("vm_" + i).appendChild(info_list_node);
 
-            // Creates the 2nd level of the view showing the info array
-            // name_node is needed to run instead of getElemenetById...
-            var info_list_node = document.createElement("UL");
-            info_list_node.setAttribute("id", "box_info_list");
-            document.getElementById("box_" + i).appendChild(info_list_node);
+                for (let j = 0; j < info.length; j++) {
+                    // creates the li for the info array
+                    var info_node = document.createElement("LI");
+                    info_node.setAttribute("id", "vm_" + i + "_info_" + j);
 
-            // CREATES THE BULLET LIST FOR THE INFO ARRAY (2ND LEVEL)
-            for (let j = 0; j < info.length; j++) {
-                var info_node = document.createElement("LI");
-                info_node.setAttribute("id", "box_" + i + "_info_" + j);
+                    // creates a button inside of each li 
+                    var but_info_node = document.createElement("BUTTON");
+                    but_info_node.setAttribute("id", "info_button");
 
-                // creates a button indise of each li 
-                var but_info_node = document.createElement("BUTTON");
-                but_info_node.setAttribute("id", "info_button");
-
-                info_list_node.appendChild(info_node);
-                var but_info_textnode = document.createTextNode(info[j]);
-                but_info_node.appendChild(but_info_textnode);
-                info_node.appendChild(but_info_node);
+                    // appends the info array as buttons inside of the ul vm_i_info_j
+                    info_list_node.appendChild(info_node);
+                    var but_info_textnode = document.createTextNode(info[j]);
+                    but_info_node.appendChild(but_info_textnode);
+                    info_node.appendChild(but_info_node);
+                }
+                // sets the attributes value to 1 for but_node
+                this.setAttribute("value", 1);
+            // runs if the value is anything other than 1 for but_node
+            } else {
+                // the added i in toggle makes each vm_info_list different and identifiable and not null
+                var toggle = document.getElementById("vm_info_list_" + i);
+                if (toggle.style.display != 'none') {
+                    // hides the vm_info_list_i if it is showing
+                    toggle.style.display = 'none';
+                } else {
+                    // shows the vm_info_i if it is not showing
+                    toggle.style.display = '';
+                }
             }
         });
     }
 })();
-
