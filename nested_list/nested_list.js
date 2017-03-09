@@ -1,7 +1,7 @@
 "use strict";
 
 (function() {
-	var name = ["box1", "box2", "box3", "box4", "box5", "box6", "box7", "box8", "box9", "box10",];	
+	var name = ["box1.txt", "box2.txt", "box3.txt", "box4.txt", "box5.txt", "box6.txt", "box7.txt", "box8.txt", "box9.txt", "box10.txt",];	
 	var info = ["inside_box1", "inside_box2", "inside_box3", "inside_box4", "inside_box5"];
 
     // Creates the ul to hold everything
@@ -26,10 +26,10 @@
         but_node.appendChild(but_textnode);
         name_node.appendChild(but_node);
 
+
         // this will allow the but_node to toggle
         but_node.setAttribute("value", 0);
-
-        // toggling the but_node
+        // TOGGLE THE NESTED LIST
         but_node.addEventListener("click", function() {
             var value = parseInt(this.getAttribute("value"));
             if (value == 0) {
@@ -46,13 +46,45 @@
 
                     // creates a button inside of each li 
                     var but_info_node = document.createElement("BUTTON");
-                    but_info_node.setAttribute("id", "info_button");
+                    but_info_node.setAttribute("id", "info_button_" + j);
 
                     // appends the info array as buttons inside of the ul vm_i_info_j
                     info_list_node.appendChild(info_node);
                     var but_info_textnode = document.createTextNode(info[j]);
                     but_info_node.appendChild(but_info_textnode);
                     info_node.appendChild(but_info_node);
+
+                    // creates the obj for the file
+                    var xhr = new XMLHttpRequest(),
+                        method = "GET",
+                        url = "files/" + name[i];
+
+                    xhr.open(method, url, true);
+
+                    // creates ul to hold the detailed info and appends it to the nested list
+                    var detail_list_node = document.createElement("UL");
+                    detail_list_node.setAttribute("id", "detail_" + j);
+                    document.getElementById("vm_" + i + "_info_" + j).appendChild(detail_list_node);
+
+                    // when the page is loaded, and vm is clicked then it will show the detailed list nested inside the nested list
+                    xhr.onreadystatechange = function() {
+                        // if statement will check if the page is loaded and status is ok
+                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                            // holds the data from the file
+                            var notes = xhr.responseText;
+
+                            // creates the li inside of the ul for detailed list node
+                            var detail_node = document.createElement("LI");
+                            detail_node.setAttribute("id", "details");
+
+                            // appends the notes to the li for details
+                            detail_list_node.appendChild(detail_node);
+                            var detail_info_textnode = document.createTextNode(notes);
+                            detail_node.appendChild(detail_info_textnode);
+                        }
+                    };
+                    // send the file to the DOM
+                    xhr.send();
                 }
                 // sets the attributes value to 1 for but_node
                 this.setAttribute("value", 1);
@@ -70,4 +102,7 @@
             }
         });
     }
+
+
+
 })();
