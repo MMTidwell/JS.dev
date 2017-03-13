@@ -4,7 +4,7 @@
 	var name = ["box1.txt", "box2.txt", "box3.txt", "box4.txt", "box5.txt", "box6.txt", "box7.txt", "box8.txt", "box9.txt", "box10.txt",];	
 	var info = ["inside_box1", "inside_box2", "inside_box3", "inside_box4", "inside_box5"];
 
-     // Creates the ul to hold everything
+ // Creates the ul to hold everything
     var main_node = document.createElement("UL");
     main_node.setAttribute("id", "vm_name_list");
     // appends the ul to the main div
@@ -80,7 +80,8 @@
                     xhr.onreadystatechange = function() {
                         // if statement will check if the page is loaded and status is ok
                         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                            var notes = xhr.responseText.split("End**");
+                            // var notes = xhr.responseText.split("End**");
+                            var notes = xhr.responseText.split("\n");
 
                             // removes word from multi places in array
                             function remove_word (arry, word) {
@@ -88,20 +89,29 @@
                                     arry[h] = arry[h].replace(word, '')
                                 }
                             }
-                            remove_word(notes, "Start**")
+                            // remove_word(notes, "Start**")
+                            // remove_word(notes, "End**")
 
                             // holds the data from the file
                             for (let i = 0; i < notes.length; i++) {
-                                // creates the li inside of the ul for detailed list node
-                                var detail_node = document.createElement("LI");
-                                detail_node.setAttribute("id", "details_" + i);
+                                if (notes[i] == "Start**") {
+                                    var title = notes[i + 1]
+                                    i++
+                                    
+console.log(title)
+                                } else if (notes[i] == "End**") {
+                                    continue
+                                } else {
+                                    // creates the li inside of the ul for detailed list node
+                                    var detail_node = document.createElement("LI");
+                                    detail_node.setAttribute("id", "details_" + i);
 
-                                // appends the notes to the li for details
-                                detail_list_node.appendChild(detail_node);
-                                var detail_info_textnode = document.createTextNode(notes[i]);
-                                detail_node.appendChild(detail_info_textnode);
+                                    // appends the notes to the li for details
+                                    detail_list_node.appendChild(detail_node);
+                                    var detail_info_textnode = document.createTextNode(notes[i]);
+                                    detail_node.appendChild(detail_info_textnode);
+                                }
                             }
-console.log(notes)
                         }
                     };
                     // send the file to the DOM
