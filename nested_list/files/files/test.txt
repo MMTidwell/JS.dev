@@ -1,2 +1,0 @@
-this is a test
-nested_list/files/files/*.txt
