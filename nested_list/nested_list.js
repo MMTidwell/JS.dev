@@ -1,136 +1,140 @@
 "use strict";
 
 (function() {
-	var name = ["box1.txt", "box2.txt", "box3.txt", "box4.txt", "box5.txt", "box6.txt", "box7.txt", "box8.txt", "box9.txt", "box10.txt",];	
-	var info = ["inside_box1", "inside_box2", "inside_box3", "inside_box4", "inside_box5"];
-
- // Creates the ul to hold everything
+	var name = ["box1.txt", "box2.txt", "box3.txt", "box4.txt", "box5.txt", "box6.txt", "box7.txt", "box8.txt", "box9.txt", "box10.txt"];	
+    
+    // // ------------------------------------------------------------------------
+    // // CREATES THE FIRST UL IN THE MAIN DIV
+    // // HOLDS THE LIST OF VMS AS BUTTONS AS LI
+    // // ------------------------------------------------------------------------
     var main_node = document.createElement("UL");
     main_node.setAttribute("id", "vm_name_list");
-    // appends the ul to the main div
     document.getElementById("main").appendChild(main_node);
 
-    // CREATES THE BULLET LIST FOR THE NAME ARRAY (1ST LEVEL)
+    // // ------------------------------------------------------------------------
+    // // ITERATES THROUGH THE NAME ARRAY CREATING THE LI AND BUTTONS FOR EACH
+    // // ------------------------------------------------------------------------
     for (let i = 0; i < name.length; i++) {
         // Creates the li inside the of the ul vm_name_list
         var name_node = document.createElement("LI");
         name_node.setAttribute("id", "vm_" + i);
-        main_node.appendChild(name_node);
+        main_node.appendChild(name_node); // appends the li to the ul
 
         // creates a button inside of each li 
-        var but_node = document.createElement("BUTTON");
-        but_node.setAttribute("id", "btn" + i);
+        var btn_node = document.createElement("BUTTON");
+        btn_node.setAttribute("id", "btn_" + i);
+        btn_node.setAttribute("value", 0);
 
         // displays vm name inside the list
         var but_textnode = document.createTextNode(name[i]);
-        but_node.appendChild(but_textnode);
-        name_node.appendChild(but_node);
+        btn_node.appendChild(but_textnode); // appends the text to the button
+        name_node.appendChild(btn_node); // appends the button to the li
 
-
-        // this will allow the but_node to toggle
-        but_node.setAttribute("value", 0);
-        // TOGGLE THE NESTED LIST
-        but_node.addEventListener("click", function() {
+        // // ------------------------------------------------------------------------
+        // // SETS THE TOGGLE FOR EACH VM NAME
+        // // ------------------------------------------------------------------------
+        btn_node.addEventListener("click", function() {
             var value = parseInt(this.getAttribute("value"));
             if (value == 0) {
-                // CREATES THE NESTED BULLETED LIST FOR THE INFO ARRAY (2ND LEVEL)
-                // creates the ul to hold the nested list
+                // // ------------------------------------------------------------------------
+                // // CREATES THE UL FOR THE NESTED LIST
+                // // ------------------------------------------------------------------------
                 var info_list_node = document.createElement("UL");
                 info_list_node.setAttribute("id", "vm_info_list_" + i);
-                document.getElementById("vm_" + i).appendChild(info_list_node);
+                document.getElementById("vm_" + i).appendChild(info_list_node); // appends ul to li (name_node)
+                // // ------------------------------------------------------------------------
+                // // XMLHTTPREQUEST (READS THE FILE)
+                // // ------------------------------------------------------------------------
+                var xhr = new XMLHttpRequest(),
+                    method = "GET",
+                    url = "files/" + name[i];
+                xhr.open(method, url, true);
 
-                for (let j = 0; j < info.length; j++) {
-                    // creates the li for the info array
-                    var info_node = document.createElement("LI");
-                    info_node.setAttribute("id", "vm_" + i + "_info_" + j);
+                xhr.onreadystatechange = function() {
+                    // checks the the page is fully loaded and status is ok
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        var notes = xhr.responseText.split("\n");
+console.log(xhr)
+                        // // ------------------------------------------------------------------------
+                        // // READS THE FILE AND CREATES THE NESTED LIST 
+                        // // ------------------------------------------------------------------------
+                        for (let j = 0; j < notes.length; j++) {
+                            if (notes[j] == "Start**") {
+                                // j++ makes the line jump by 1, causing the button to display the title
+                                j++;
+                                // // ------------------------------------------------------------------------
+                                // // PLACES THE TITLE NAME AS BUTTONS
+                                // // ------------------------------------------------------------------------
+                                var info_node = document.createElement("LI");
+                                info_node.setAttribute("id", "vm_" + i + "_info_" + i);
+                                info_list_node.appendChild(info_node); // appends the li to the ul
+                                
+                                var btn_info_node = document.createElement("BUTTON");
+                                btn_info_node.setAttribute("id", "info_button_" + i);
+                                btn_info_node.setAttribute("value", 0);
+                                
+                                // j++ is used again here to jump by 1 line, causing the nested li to display the
+                                // detailed info only
+                                var info_textnode = document.createTextNode(notes[j++]);
+                                btn_info_node.appendChild(info_textnode); // appends the text to the button
+                                info_node.appendChild(btn_info_node); // appends the button to the li
 
-                    // creates a button inside of each li 
-                    var but_info_node = document.createElement("BUTTON");
-                    but_info_node.setAttribute("id", "info_button_" + j);
+                                // // ------------------------------------------------------------------------
+                                // // SETS THE TOGGLE FOR TITLE LIST (1ST NESTED LEVEL)
+                                // // ------------------------------------------------------------------------
+                                btn_info_node.addEventListener("click", function() {
+                                    var title_value = parseInt(this.getAttribute("value"));
+                                    if (title_value == 0) {
+                                        // // ------------------------------------------------------------------------
+                                        // // CREATES THE NESTED DETAILED INFO (2 NESTED LEVEL)
+                                        // // ------------------------------------------------------------------------
+                                        var detailed_info = document.createElement("UL");
+                                        detailed_info.setAttribute("id", "detailed_vm_info_" + j);
+                                        document.getElementById("vm_" + i + "_info_" + i).appendChild(detailed_info); // appends ul to li (info_node)
 
-                    // appends the info array as buttons inside of the ul vm_i_info_j
-                    info_list_node.appendChild(info_node);
-                    var but_info_textnode = document.createTextNode(info[j]);
-                    but_info_node.appendChild(but_info_textnode);
-                    info_node.appendChild(but_info_node);
+                                        while (notes[j] != "End**") {
+                                            var detailed_info_node = document.createElement("LI");
+                                            detailed_info_node.setAttribute("id", "vm_detailed_info_" + j);
+                                            detailed_info.appendChild(detailed_info_node); // appends li to ul
 
+                                            var detailed_info_textnode = document.createTextNode(notes[j]);
+                                            detailed_info_node.appendChild(detailed_info_textnode); // appends text to li 
+console.log("j is in " + notes[j] + "\n" + j)
+                                            j++;
+                                        }
+                                        this.setAttribute("value", 1);
+console.log(this)
+                                    } else {
+                                        var temp = j-1;
+                                        var nested_toggle = document.getElementById("detailed_vm_info_" + temp);
+console.log("j in nested_toggle" + j)
+                                        if (nested_toggle.style.display != 'none') {
+                                            nested_toggle.style.display = 'none';
+                                        } else {
+                                            nested_toggle.style.display = '';
+                                        } // closes if inside else inside btn_info_node eventListner
+                                    } // closes the if inside the nested toggle
+                                }); // closes the nested toggle
+                            } // closes the if inside of for inside of if inside of onreadystatechange function
+                        } // closes the for loop inside if inside onreadystatechange function
+                    } // closes the if statement inside onreadystatechange function
+                }; // closes the onreadystatechange function
+                xhr.send();
 
-// ----------------------------------------------------------------------------------------
-// ----------------------------------------------------------------------------------------
-// ----------------------------------------------------------------------------------------
-// ----------------------------------PICK UP HERE IN THE AM--------------------------------
-// --------------THE NESTED DETAILED LIST IS WORKING, WE ARE NOW TRYING TO GET-------------
-// ---THE DETAILS IN THE CORRECT NESTED LIST AREA. THIS CAN BE ACHIVED BY USING SPLIT()----
-// -----------ONCE THIS IS DONE WE WILL BE LOOKING AT TOGGLING THE DETAILED INFO-----------
-// ----------------------------------------------------------------------------------------
-// ----------------------------------------------------------------------------------------
-                    // creates the obj for the file
-                    var xhr = new XMLHttpRequest(),
-                        method = "GET",
-                        url = "files/" + name[i];
-
-                    xhr.open(method, url, true);
-
-                    // creates ul to hold the detailed info and appends it to the nested list
-                    var detail_list_node = document.createElement("UL");
-                    detail_list_node.setAttribute("id", "detail_" + j);
-                    document.getElementById("vm_" + i + "_info_" + j).appendChild(detail_list_node);
-
-                    // when the page is loaded, and vm is clicked then it will show the detailed list nested inside the nested list
-                    xhr.onreadystatechange = function() {
-                        // if statement will check if the page is loaded and status is ok
-                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                            // var notes = xhr.responseText.split("End**");
-                            var notes = xhr.responseText.split("\n");
-
-                            // removes word from multi places in array
-                            function remove_word (arry, word) {
-                                for (var h = 0; h < arry.length; h++) {
-                                    arry[h] = arry[h].replace(word, '')
-                                }
-                            }
-                            // remove_word(notes, "Start**")
-                            // remove_word(notes, "End**")
-
-                            // holds the data from the file
-                            for (let i = 0; i < notes.length; i++) {
-                                if (notes[i] == "Start**") {
-                                    var title = notes[i + 1]
-                                    i++
-                                    
-console.log(title)
-                                } else if (notes[i] == "End**") {
-                                    continue
-                                } else {
-                                    // creates the li inside of the ul for detailed list node
-                                    var detail_node = document.createElement("LI");
-                                    detail_node.setAttribute("id", "details_" + i);
-
-                                    // appends the notes to the li for details
-                                    detail_list_node.appendChild(detail_node);
-                                    var detail_info_textnode = document.createTextNode(notes[i]);
-                                    detail_node.appendChild(detail_info_textnode);
-                                }
-                            }
-                        }
-                    };
-                    // send the file to the DOM
-                    xhr.send();
-                }
-                // sets the attributes value to 1 for but_node
+                // allows btn_node to be value of 1 so it will only load the file once and
+                // then toggle
                 this.setAttribute("value", 1);
-            // runs if the value is anything other than 1 for but_node
+console.log(this)
             } else {
-                // the added i in toggle makes each vm_info_list different and identifiable and not null
                 var toggle = document.getElementById("vm_info_list_" + i);
                 if (toggle.style.display != 'none') {
-                    // hides the vm_info_list_i if it is showing
+                    // hides the vm_info_list
                     toggle.style.display = 'none';
                 } else {
-                    // shows the vm_info_i if it is not showing
+                    // shows the vm_info_list
                     toggle.style.display = '';
-                }
-            }
-        });
-    }
-})();
+                } // closes the if statement inside of the toggle
+            } // closes the if statement for the toggle
+        }); // closes toggle
+    } // closes the for loop for name
+})(); // closes the main function
